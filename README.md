@@ -6,6 +6,14 @@
 This repository contains [Stable Diffusion](https://github.com/CompVis/stable-diffusion) models trained from scratch and will be continuously updated with
 new checkpoints. The following list provides an overview of all currently available models. More coming soon.
 
+## Personal notes
+
+For installation on Apple Silicon, while NVIDIA no longer supports CUDA toolkit on MacOS, they have an install for debugging purposes: [NVIDIA CUDA Toolkit - Developer Tools for macOS - CUDA Toolkit 11.7](https://developer.nvidia.com/gameworksdownload#?dn=cuda-toolkit-developer-tools-for-macos-11-7-0). Follow all the instructions there to install `Nsight Systems 2022.1.3.3`, `Nsight Compute 2022.2.0`, `Visual Profiler 11.7.0`, and `cuda-gdb 11.7.0`.
+
+You'll need to download version 8 of the JDK, which you can get from [Azul's Zulu build](https://mirror.bazel.build/openjdk/index.html): [Zulu 8.23.0.3 8u144-b01](https://cdn.azul.com/zulu/bin/zulu8.23.0.3-jdk8.0.144-macosx_x64.dmg). Afterwards, you should add `export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/` to your `~/.zshrc` file. Crazy enough, you also have to download and install [Python 2.7](https://www.python.org/ftp/python/2.7.18/python-2.7.18-macosx10.9.pkg).
+
+Mac hates many of these files, so you have to go to Apple menu > System Settings... > Privacy & Security where you can find some sort of "Open Anyway" link to allow certain installs.
+
 ## News
 
 
@@ -29,7 +37,7 @@ Per default, the attention operation of the model is evaluated at full precision
 
 *Version 2.0*
 
-- New stable diffusion model (_Stable Diffusion 2.0-v_) at 768x768 resolution. Same number of parameters in the U-Net as 1.5, but uses [OpenCLIP-ViT/H](https://github.com/mlfoundations/open_clip) as the text encoder and is trained from scratch. _SD 2.0-v_ is a so-called [v-prediction](https://arxiv.org/abs/2202.00512) model. 
+- New stable diffusion model (_Stable Diffusion 2.0-v_) at 768x768 resolution. Same number of parameters in the U-Net as 1.5, but uses [OpenCLIP-ViT/H](https://github.com/mlfoundations/open_clip) as the text encoder and is trained from scratch. _SD 2.0-v_ is a so-called [v-prediction](https://arxiv.org/abs/2202.00512) model.
 - The above model is finetuned from _SD 2.0-base_, which was trained as a standard noise-prediction model on 512x512 images and is also made available.
 - Added a [x4 upscaling latent text-guided diffusion model](#image-upscaling-with-stable-diffusion).
 - New [depth-guided stable diffusion model](#depth-conditional-stable-diffusion), finetuned from _SD 2.0-base_. The model is conditioned on monocular depth estimates inferred via [MiDaS](https://github.com/isl-org/MiDaS) and can be used for structure-preserving img2img and shape-conditional synthesis.
@@ -55,7 +63,7 @@ and [many others](#shout-outs).
 
 Stable Diffusion is a latent text-to-image diffusion model.
 ________________________________
-  
+
 ## Requirements
 
 You can update an existing [latent diffusion](https://github.com/CompVis/latent-diffusion) environment by running
@@ -64,14 +72,14 @@ You can update an existing [latent diffusion](https://github.com/CompVis/latent-
 conda install pytorch==1.12.1 torchvision==0.13.1 -c pytorch
 pip install transformers==4.19.2 diffusers invisible-watermark
 pip install -e .
-``` 
+```
 #### xformers efficient attention
-For more efficiency and speed on GPUs, 
+For more efficiency and speed on GPUs,
 we highly recommended installing the [xformers](https://github.com/facebookresearch/xformers)
 library.
 
 Tested on A100 with CUDA 11.4.
-Installation needs a somewhat recent version of nvcc and gcc/g++, obtain those, e.g., via 
+Installation needs a somewhat recent version of nvcc and gcc/g++, obtain those, e.g., via
 ```commandline
 export CUDA_HOME=/usr/local/cuda-11.4
 conda install -c nvidia/label/cuda-11.4.0 cuda-nvcc
@@ -98,7 +106,7 @@ Stable Diffusion models are general text-to-image diffusion models and therefore
 in their training data. Although efforts were made to reduce the inclusion of explicit pornographic material, **we do not recommend using the provided weights for services or products without additional safety mechanisms and considerations.
 The weights are research artifacts and should be treated as such.**
 Details on the training procedure and data, as well as the intended use of the model can be found in the corresponding [model card](https://huggingface.co/stabilityai/stable-diffusion-2).
-The weights are available via [the StabilityAI organization at Hugging Face](https://huggingface.co/StabilityAI) under the [CreativeML Open RAIL++-M License](LICENSE-MODEL). 
+The weights are available via [the StabilityAI organization at Hugging Face](https://huggingface.co/StabilityAI) under the [CreativeML Open RAIL++-M License](LICENSE-MODEL).
 
 
 
@@ -106,7 +114,7 @@ The weights are available via [the StabilityAI organization at Hugging Face](htt
 
 Stable Diffusion v2 refers to a specific configuration of the model
 architecture that uses a downsampling-factor 8 autoencoder with an 865M UNet
-and OpenCLIP ViT-H/14 text encoder for the diffusion model. The _SD 2-v_ model produces 768x768 px outputs. 
+and OpenCLIP ViT-H/14 text encoder for the diffusion model. The _SD 2-v_ model produces 768x768 px outputs.
 
 Evaluations with different classifier-free guidance scales (1.5, 2.0, 3.0, 4.0,
 5.0, 6.0, 7.0, 8.0) and 50 DDIM sampling steps show the relative improvements of the checkpoints:
@@ -126,26 +134,26 @@ We provide a [reference script for sampling](#reference-sampling-script).
 This script incorporates an [invisible watermarking](https://github.com/ShieldMnt/invisible-watermark) of the outputs, to help viewers [identify the images as machine-generated](scripts/tests/test_watermark.py).
 We provide the configs for the _SD2-v_ (768px) and _SD2-base_ (512px) model.
 
-First, download the weights for [_SD2.1-v_](https://huggingface.co/stabilityai/stable-diffusion-2-1) and [_SD2.1-base_](https://huggingface.co/stabilityai/stable-diffusion-2-1-base). 
+First, download the weights for [_SD2.1-v_](https://huggingface.co/stabilityai/stable-diffusion-2-1) and [_SD2.1-base_](https://huggingface.co/stabilityai/stable-diffusion-2-1-base).
 
 To sample from the _SD2.1-v_ model, run the following:
 
 ```
-python scripts/txt2img.py --prompt "a professional photograph of an astronaut riding a horse" --ckpt <path/to/768model.ckpt/> --config configs/stable-diffusion/v2-inference-v.yaml --H 768 --W 768  
+python scripts/txt2img.py --prompt "a professional photograph of an astronaut riding a horse" --ckpt <path/to/768model.ckpt/> --config configs/stable-diffusion/v2-inference-v.yaml --H 768 --W 768
 ```
 or try out the Web Demo: [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/stabilityai/stable-diffusion).
 
 To sample from the base model, use
 ```
-python scripts/txt2img.py --prompt "a professional photograph of an astronaut riding a horse" --ckpt <path/to/model.ckpt/> --config <path/to/config.yaml/>  
+python scripts/txt2img.py --prompt "a professional photograph of an astronaut riding a horse" --ckpt <path/to/model.ckpt/> --config <path/to/config.yaml/>
 ```
 
-By default, this uses the [DDIM sampler](https://arxiv.org/abs/2010.02502), and renders images of size 768x768 (which it was trained on) in 50 steps. 
+By default, this uses the [DDIM sampler](https://arxiv.org/abs/2010.02502), and renders images of size 768x768 (which it was trained on) in 50 steps.
 Empirically, the v-models can be sampled with higher guidance scales.
 
-Note: The inference config for all model versions is designed to be used with EMA-only checkpoints. 
+Note: The inference config for all model versions is designed to be used with EMA-only checkpoints.
 For this reason `use_ema=False` is set in the configuration, otherwise the code will try to switch from
-non-EMA to EMA weights. 
+non-EMA to EMA weights.
 
 #### Enable Intel® Extension for PyTorch* optimizations in Text-to-Image script
 
@@ -191,7 +199,7 @@ To augment the well-established [img2img](https://github.com/CompVis/stable-diff
 
 
 Note that the original method for image modification introduces significant semantic changes w.r.t. the initial image.
-If that is not desired, download our [depth-conditional stable diffusion](https://huggingface.co/stabilityai/stable-diffusion-2-depth) model and the `dpt_hybrid` MiDaS [model weights](https://github.com/intel-isl/DPT/releases/download/1_0/dpt_hybrid-midas-501f0c75.pt), place the latter in a folder `midas_models` and sample via 
+If that is not desired, download our [depth-conditional stable diffusion](https://huggingface.co/stabilityai/stable-diffusion-2-depth) model and the `dpt_hybrid` MiDaS [model weights](https://github.com/intel-isl/DPT/releases/download/1_0/dpt_hybrid-midas-501f0c75.pt), place the latter in a folder `midas_models` and sample via
 ```
 python scripts/gradio/depth2img.py configs/stable-diffusion/v2-midas-inference.yaml <path-to-ckpt>
 ```
@@ -204,7 +212,7 @@ streamlit run scripts/streamlit/depth2img.py configs/stable-diffusion/v2-midas-i
 
 This method can be used on the samples of the base model itself.
 For example, take [this sample](assets/stable-samples/depth2img/old_man.png) generated by an anonymous discord user.
-Using the [gradio](https://gradio.app) or [streamlit](https://streamlit.io/) script `depth2img.py`, the MiDaS model first infers a monocular depth estimate given this input, 
+Using the [gradio](https://gradio.app) or [streamlit](https://streamlit.io/) script `depth2img.py`, the MiDaS model first infers a monocular depth estimate given this input,
 and the diffusion model is then conditioned on the (relative) depth output.
 
 <p align="center">
@@ -238,8 +246,8 @@ or
 streamlit run scripts/streamlit/superresolution.py -- configs/stable-diffusion/x4-upscaling.yaml <path-to-checkpoint>
 ```
 
-for a Gradio or Streamlit demo of the text-guided x4 superresolution model.  
-This model can be used both on real inputs and on synthesized examples. For the latter, we recommend setting a higher 
+for a Gradio or Streamlit demo of the text-guided x4 superresolution model.
+This model can be used both on real inputs and on synthesized examples. For the latter, we recommend setting a higher
 `noise_level`, e.g. `noise_level=100`.
 
 ### Image Inpainting with Stable Diffusion
@@ -258,8 +266,8 @@ or
 streamlit run scripts/streamlit/inpainting.py -- configs/stable-diffusion/v2-inpainting-inference.yaml <path-to-checkpoint>
 ```
 
-for a Gradio or Streamlit demo of the inpainting model. 
-This scripts adds invisible watermarking to the demo in the [RunwayML](https://github.com/runwayml/stable-diffusion/blob/main/scripts/inpaint_st.py) repository, but both should work interchangeably with the checkpoints/configs.  
+for a Gradio or Streamlit demo of the inpainting model.
+This scripts adds invisible watermarking to the demo in the [RunwayML](https://github.com/runwayml/stable-diffusion/blob/main/scripts/inpaint_st.py) repository, but both should work interchangeably with the checkpoints/configs.
 
 
 
@@ -267,13 +275,13 @@ This scripts adds invisible watermarking to the demo in the [RunwayML](https://g
 - Thanks to [Hugging Face](https://huggingface.co/) and in particular [Apolinário](https://github.com/apolinario)  for support with our model releases!
 - Stable Diffusion would not be possible without [LAION](https://laion.ai/) and their efforts to create open, large-scale datasets.
 - The [DeepFloyd team](https://twitter.com/deepfloydai) at Stability AI, for creating the subset of [LAION-5B](https://laion.ai/blog/laion-5b/) dataset used to train the model.
-- Stable Diffusion 2.0 uses [OpenCLIP](https://laion.ai/blog/large-openclip/), trained by [Romain Beaumont](https://github.com/rom1504).  
+- Stable Diffusion 2.0 uses [OpenCLIP](https://laion.ai/blog/large-openclip/), trained by [Romain Beaumont](https://github.com/rom1504).
 - Our codebase for the diffusion models builds heavily on [OpenAI's ADM codebase](https://github.com/openai/guided-diffusion)
-and [https://github.com/lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch). 
+and [https://github.com/lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch).
 Thanks for open-sourcing!
 - [CompVis](https://github.com/CompVis/stable-diffusion) initial stable diffusion release
 - [Patrick](https://github.com/pesser)'s [implementation](https://github.com/runwayml/stable-diffusion/blob/main/scripts/inpaint_st.py) of the streamlit demo for inpainting.
-- `img2img` is an application of [SDEdit](https://arxiv.org/abs/2108.01073) by [Chenlin Meng](https://cs.stanford.edu/~chenlin/) from the [Stanford AI Lab](https://cs.stanford.edu/~ermon/website/). 
+- `img2img` is an application of [SDEdit](https://arxiv.org/abs/2108.01073) by [Chenlin Meng](https://cs.stanford.edu/~chenlin/) from the [Stanford AI Lab](https://cs.stanford.edu/~ermon/website/).
 - [Kat's implementation]((https://github.com/CompVis/latent-diffusion/pull/51)) of the [PLMS](https://arxiv.org/abs/2202.09778) sampler, and [more](https://github.com/crowsonkb/k-diffusion).
 - [DPMSolver](https://arxiv.org/abs/2206.00927) [integration](https://github.com/CompVis/stable-diffusion/pull/440) by [Cheng Lu](https://github.com/LuChengTHU).
 - Facebook's [xformers](https://github.com/facebookresearch/xformers) for efficient attention computation.
@@ -290,7 +298,7 @@ The weights are available via [the StabilityAI organization at Hugging Face](htt
 
 ```
 @misc{rombach2021highresolution,
-      title={High-Resolution Image Synthesis with Latent Diffusion Models}, 
+      title={High-Resolution Image Synthesis with Latent Diffusion Models},
       author={Robin Rombach and Andreas Blattmann and Dominik Lorenz and Patrick Esser and Björn Ommer},
       year={2021},
       eprint={2112.10752},
