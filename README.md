@@ -8,6 +8,8 @@ new checkpoints. The following list provides an overview of all currently availa
 
 ## Personal notes
 
+I'm installing on Apple Silicon. [Here are some notes on that](https://huggingface.co/docs/diffusers/optimization/mps) from Huggingface.
+
 For installation on Apple Silicon, while NVIDIA no longer supports CUDA toolkit on MacOS, they have an install for debugging purposes: [NVIDIA CUDA Toolkit - Developer Tools for macOS - CUDA Toolkit 11.7](https://developer.nvidia.com/gameworksdownload#?dn=cuda-toolkit-developer-tools-for-macos-11-7-0). Follow all the instructions there to install `Nsight Systems 2022.1.3.3`, `Nsight Compute 2022.2.0`, `Visual Profiler 11.7.0`, and `cuda-gdb 11.7.0`.
 
 You'll need to download version 8 of the JDK, which you can get from [Azul's Zulu build](https://mirror.bazel.build/openjdk/index.html): [Zulu 8.23.0.3 8u144-b01](https://cdn.azul.com/zulu/bin/zulu8.23.0.3-jdk8.0.144-macosx_x64.dmg). Afterwards, you should add `export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/` to your `~/.zshrc` file. Crazy enough, you also have to download and install [Python 2.7](https://www.python.org/ftp/python/2.7.18/python-2.7.18-macosx10.9.pkg).
